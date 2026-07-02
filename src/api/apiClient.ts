@@ -1,0 +1,62 @@
+// src/api/apiClient.ts
+import axios from "axios";
+import { isTokenExpired } from "../utils/tockenUtils";
+import { useAuthStore } from "../store/authStore";
+
+const API_BASE = "https://api.initcart.in/api/";
+const REFRESH_URL = API_BASE + "token/refresh/";
+
+const apiClient = axios.create({
+  baseURL: API_BASE,
+  timeout: 15000,
+});
+
+// ---- REQUEST INTERCEPTOR ----
+apiClient.interceptors.request.use((config) => {
+  const access = localStorage.getItem("access");
+
+  if (access && !isTokenExpired(access)) {
+    config.headers.Authorization = `Bearer ${access}`;
+  }
+
+  return config;
+});
+
+// ---- RESPONSE INTERCEPTOR ----
+apiClient.interceptors.response.use(
+  (res) => res,
+  async (err) => {
+    const original = err.config;
+
+    if (err.response?.status !== 401 || original._retry) {
+      return Promise.reject(err);
+    }
+
+    original._retry = true;
+
+    const refresh = localStorage.getItem("refresh");
+
+    if (!refresh || isTokenExpired(refresh)) {
+      useAuthStore.getState().logoutAndRedirect();
+      return Promise.reject(err);
+    }
+
+    try {
+      const res = await axios.post(REFRESH_URL, { refresh });
+
+      const newAccess = res.data.access;
+
+      localStorage.setItem("access", newAccess);
+      useAuthStore.getState().setNewAccess(newAccess);
+
+      original.headers.Authorization = "Bearer " + newAccess;
+
+      return apiClient(original);
+    } catch (e) {
+      useAuthStore.getState().logoutAndRedirect();
+      return Promise.reject(e);
+    }
+  }
+);
+
+export default apiClient;
