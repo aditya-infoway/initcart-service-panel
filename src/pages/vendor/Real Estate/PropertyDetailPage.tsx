@@ -19,7 +19,7 @@ import {
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 
-const API_BASE_URL = 'https://api.initcart.in/api';
+const API_BASE_URL = 'http://localhost:8000/api';
 
 interface PropertyDetail {
   id: number;

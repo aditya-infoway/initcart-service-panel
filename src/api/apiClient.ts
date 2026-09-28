@@ -3,7 +3,7 @@ import axios from "axios";
 import { isTokenExpired } from "../utils/tockenUtils";
 import { useAuthStore } from "../store/authStore";
 
-const API_BASE = "https://api.initcart.in/api/";
+const API_BASE = "http://localhost:8000/api/";
 const REFRESH_URL = API_BASE + "token/refresh/";
 
 const apiClient = axios.create({

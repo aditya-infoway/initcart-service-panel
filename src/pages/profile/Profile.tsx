@@ -64,7 +64,7 @@ const Profile: React.FC = () => {
   const { access, logout } = useAuthStore();
 
   // API base URL
-  const API_BASE_URL = "https://api.initcart.in";
+  const API_BASE_URL = "http://localhost:8000";
 
   // Fetch vendor profile data
   useEffect(() => {
