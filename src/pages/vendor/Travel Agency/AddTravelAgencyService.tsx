@@ -19,7 +19,7 @@ import {
 } from "react-icons/fi";
 import apiClient from "../../../api/apiClient";
 
-const API_BASE_URL = 'https://api.initcart.in/api';
+const API_BASE_URL = 'http://localhost:8000/api';
 
 interface ServiceItem {
   name: string;
